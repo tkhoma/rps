@@ -34,6 +34,11 @@ You can call
 ```
 1 is the id of the game, and rock is the move
 
+valid moves are:
+```
+rock, paper, scissors
+```
+
 * Rock beats Scissors
 * Scissors beats Paper
 * Paper beats Rock
