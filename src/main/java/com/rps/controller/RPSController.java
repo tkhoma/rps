@@ -62,7 +62,7 @@ public class RPSController {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteGame(@PathVariable long id) throws GameDoesNotExistsException, DeletedGameException {
+    public void deleteGame(@PathVariable long id) throws GameDoesNotExistsException, DeletedGameException, FinishedGameException {
         Optional<Game> game = gameRepository.findById(id);
 
         if (!game.isPresent()) {
@@ -75,6 +75,10 @@ public class RPSController {
             throw new DeletedGameException(id);
         }
 
+        if (foundGame.getStatus() == GameStatus.FINISHED) {
+            throw new FinishedGameException(id);
+        }
+
         foundGame.setStatus(GameStatus.DELETED);
 
         gameRepository.save(foundGame);
@@ -83,7 +87,7 @@ public class RPSController {
     @RequestMapping(method = RequestMethod.PUT, value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public void play(@PathVariable long id, @RequestBody String humanMoveString) throws GameDoesNotExistsException, DeletedGameException, FinishedGameException {
-    	Move humanPlayerMove = Move.getByName(humanMoveString);
+        Move humanPlayerMove = Move.getByName(humanMoveString);
         Optional<Game> game = gameRepository.findById(id);
 
         if (!game.isPresent()) {
@@ -111,37 +115,37 @@ public class RPSController {
 
         gameRepository.save(foundGame);
     }
-    
+
     @RequestMapping(method = RequestMethod.GET, value = "/statistics")
     @ResponseStatus(HttpStatus.OK)
     public GameStatistics statistics() {
-    	Iterable<Game> allGames = gameRepository.findAll();
-    	
-    	GameStatistics statistics = new GameStatistics();
-    	int gamesCount = 0;
-    	int humanWin = 0;
-    	int computerWin = 0;
-    	int draw = 0;
-    	for (Game game : allGames) {
-			gamesCount++;
-			
-			switch(game.getResult()) {
-				case DRAW:
-					draw++;
-					break;
-				case LOOSE:
-					computerWin++;
-					break;
-				case WIN:
-					humanWin++;
-					break;
-			}
-		}
-    	
-    	statistics.setHumanWin(humanWin);
-    	statistics.setComputerWin(computerWin);
-    	statistics.setDraw(draw);
-    	statistics.setGamesNumber(gamesCount);
-    	return statistics;
+        Iterable<Game> allGames = gameRepository.findAll();
+
+        GameStatistics statistics = new GameStatistics();
+        int gamesCount = 0;
+        int humanWin = 0;
+        int computerWin = 0;
+        int draw = 0;
+        for (Game game : allGames) {
+            gamesCount++;
+
+            switch(game.getResult()) {
+                case DRAW:
+                    draw++;
+                    break;
+                case LOOSE:
+                    computerWin++;
+                    break;
+                case WIN:
+                    humanWin++;
+                    break;
+            }
+        }
+
+        statistics.setHumanWin(humanWin);
+        statistics.setComputerWin(computerWin);
+        statistics.setDraw(draw);
+        statistics.setGamesNumber(gamesCount);
+        return statistics;
     }
 }

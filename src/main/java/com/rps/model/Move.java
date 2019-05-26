@@ -23,15 +23,15 @@ public enum Move {
 
     public abstract boolean isBetterThan(Move computerPlayerMove);
     public static Map<String, Move> movesByName = new HashMap<>();
-    
+
     static {
-    	Move[] moves = Move.values();
-    	for (Move move : moves) {
-    		movesByName.put(move.name(), move);
-    	}
+        Move[] moves = Move.values();
+        for (Move move : moves) {
+            movesByName.put(move.name(), move);
+        }
     }
-    
+
     public static Move getByName(String name) {
-    	return movesByName.get(name.toUpperCase());
+        return movesByName.get(name.toUpperCase());
     }
 }
